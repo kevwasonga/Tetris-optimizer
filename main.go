@@ -10,15 +10,17 @@ import (
 )
 
 func main() {
-	tetrominoes, err := Loadbanner("tetris.txt")
+	tetrominoes, err := Loadbanner("sample.txt")
 	if err != nil {
 		fmt.Println("Error loading tetrominoes:", err)
 		return
 	}
 
+	valid := tetromino.IsValidTetromino
+
 	validTetrominoes := make(map[int]string)
 	for key, tetrominoe := range tetrominoes {
-		if isValidTetromino(tetrominoe) {
+		if valid(tetrominoe) {
 			validTetrominoes[key] = tetromino.ReplaceChars(tetrominoe, key)
 		} else {
 			fmt.Printf("Tetromino %d is invalid:\n%s\n", key, tetrominoe)
@@ -34,7 +36,8 @@ func main() {
 	fmt.Println("Assembled Tetrominoes into Square:")
 	printSquare(square)
 }
-//map the banner file containing the tetrominoes
+
+// map the banner file containing the tetrominoes
 func Loadbanner(fileName string) (map[int]string, error) {
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -73,21 +76,6 @@ func Loadbanner(fileName string) (map[int]string, error) {
 	}
 
 	return bannerMap, nil
-}
-//validate tetrominoes
-func isValidTetromino(tetromino string) bool {
-	lines := strings.Split(tetromino, "\n")
-	// Ensure there are exactly 4 lines
-	if len(lines) != 4 {
-		return false
-	}
-	// Ensure each line has the correct length
-	for _, line := range lines {
-		if len(line) != 4 {
-			return false
-		}
-	}
-	return true
 }
 
 func assembleTetrominoes(tetrominoes map[int]string) [][]rune {
