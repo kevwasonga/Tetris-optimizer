@@ -34,7 +34,7 @@ func main() {
 	fmt.Println("Assembled Tetrominoes into Square:")
 	printSquare(square)
 }
-
+//map the banner file containing the tetrominoes
 func Loadbanner(fileName string) (map[int]string, error) {
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -74,7 +74,7 @@ func Loadbanner(fileName string) (map[int]string, error) {
 
 	return bannerMap, nil
 }
-
+//validate tetrominoes
 func isValidTetromino(tetromino string) bool {
 	lines := strings.Split(tetromino, "\n")
 	// Ensure there are exactly 4 lines
