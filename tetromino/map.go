@@ -4,9 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
-// map the banner file containing the tetrominoes
+// Loadbanner loads the banner file containing tetrominoes and processes each tetromino.
+// It returns a map with keys representing the tetromino index and values as the processed tetromino string.
 func Loadbanner(fileName string) (map[int]string, error) {
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -18,25 +20,20 @@ func Loadbanner(fileName string) (map[int]string, error) {
 
 	bannerMap := make(map[int]string)
 	key := 1
-	linecount := 0
-	var random string
+	var tetrominoLines []string
 
 	for scanner.Scan() {
 		line := scanner.Text()
 
 		if line != "" {
-			if linecount < 3 {
-				random += line + "\n"
-			} else {
-				random += line
-			}
-			linecount++
+			tetrominoLines = append(tetrominoLines, line)
 		}
-		if linecount == 4 {
-			bannerMap[key] = random
+
+		if len(tetrominoLines) == 4 {
+			processedTetromino := processTetromino(tetrominoLines)
+			bannerMap[key] = processedTetromino
 			key++
-			linecount = 0
-			random = ""
+			tetrominoLines = nil
 		}
 	}
 
@@ -45,4 +42,64 @@ func Loadbanner(fileName string) (map[int]string, error) {
 	}
 
 	return bannerMap, nil
+}
+
+// processTetromino processes a single tetromino (4x4 grid) string.
+// It removes rows and columns made entirely of '.' and returns the processed tetromino string.
+func processTetromino(tetromino []string) string {
+	grid := make([][]rune, 4)
+	for i, line := range tetromino {
+		grid[i] = []rune(line)
+	}
+
+	// Remove entirely '.' rows
+	var trimmedRows [][]rune
+	for _, row := range grid {
+		if !isRowEmpty(row) {
+			trimmedRows = append(trimmedRows, row)
+		}
+	}
+
+	// Remove entirely '.' columns
+	var trimmedGrid [][]rune
+	for col := 0; col < 4; col++ {
+		if !isColumnEmpty(trimmedRows, col) {
+			var column []rune
+			for _, row := range trimmedRows {
+				column = append(column, row[col])
+			}
+			trimmedGrid = append(trimmedGrid, column)
+		}
+	}
+
+	// Convert trimmed grid back to string
+	var processedTetromino strings.Builder
+	for _, row := range trimmedGrid {
+		for _, char := range row {
+			processedTetromino.WriteRune(char)
+		}
+		processedTetromino.WriteRune('\n')
+	}
+
+	return processedTetromino.String()
+}
+
+// isRowEmpty checks if a row is entirely made of '.'
+func isRowEmpty(row []rune) bool {
+	for _, char := range row {
+		if char != '.' {
+			return false
+		}
+	}
+	return true
+}
+
+// isColumnEmpty checks if a column in the grid is entirely made of '.'
+func isColumnEmpty(grid [][]rune, col int) bool {
+	for _, row := range grid {
+		if row[col] != '.' {
+			return false
+		}
+	}
+	return true
 }
