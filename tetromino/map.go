@@ -55,7 +55,7 @@ func processTetromino(tetromino []string) string {
 	// Remove entirely '.' rows
 	var trimmedRows [][]rune
 	for _, row := range grid {
-		if !isRowEmpty(row) {
+		if !isRowDots(row) {
 			trimmedRows = append(trimmedRows, row)
 		}
 	}
@@ -63,7 +63,7 @@ func processTetromino(tetromino []string) string {
 	// Remove entirely '.' columns
 	var trimmedGrid [][]rune
 	for col := 0; col < 4; col++ {
-		if !isColumnEmpty(trimmedRows, col) {
+		if !isColumnDots(trimmedRows, col) {
 			var column []rune
 			for _, row := range trimmedRows {
 				column = append(column, row[col])
@@ -85,7 +85,7 @@ func processTetromino(tetromino []string) string {
 }
 
 // isRowEmpty checks if a row is entirely made of '.'
-func isRowEmpty(row []rune) bool {
+func isRowDots(row []rune) bool {
 	for _, char := range row {
 		if char != '.' {
 			return false
@@ -95,7 +95,7 @@ func isRowEmpty(row []rune) bool {
 }
 
 // isColumnEmpty checks if a column in the grid is entirely made of '.'
-func isColumnEmpty(grid [][]rune, col int) bool {
+func isColumnDots(grid [][]rune, col int) bool {
 	for _, row := range grid {
 		if row[col] != '.' {
 			return false
