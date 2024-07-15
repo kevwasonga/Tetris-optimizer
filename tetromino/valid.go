@@ -1,7 +1,6 @@
 package tetromino
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -25,7 +24,7 @@ func IsValidTetromino(tetromino string) bool {
 		// Check characters in line
 		for j, char := range line {
 			if char != '.' && char != '#' {
-				fmt.Printf("Invalid character '%c' in line %d, position %d.\n", char, i+1, j+1)
+				// fmt.Printf("Invalid character '%c' in line %d, position %d.\n", char, i+1, j+1)
 				return false
 			}
 			if char == '#' {
@@ -39,7 +38,7 @@ func IsValidTetromino(tetromino string) bool {
 					}
 				}
 				if connections == 0 {
-					fmt.Printf("No connections found for '#' character at line %d, position %d.\n", i+1, j+1)
+					// fmt.Printf("No connections found for '#' character at line %d, position %d.\n", i+1, j+1)
 					return false
 				}
 				totalConnections += connections // Accumulate total connections
@@ -49,7 +48,7 @@ func IsValidTetromino(tetromino string) bool {
 
 	// Check if there are exactly 4 '#' characters and total connections are at least 6
 	if countHashes != 4 || totalConnections < 6 {
-		fmt.Println("Invalid number of '#' characters or insufficient connections.")
+		// fmt.Println("Invalid number of '#' characters or insufficient connections.")
 		return false
 	}
 
