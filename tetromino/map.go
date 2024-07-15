@@ -83,11 +83,15 @@ func processTetromino(tetromino []string) string {
 		}
 	}
 
-	// Convert trimmed grid back to string
+	// Convert trimmed grid back to string with original formatting
 	var processedTetromino strings.Builder
-	for _, row := range trimmedGrid {
-		for _, char := range row {
-			processedTetromino.WriteRune(char)
+	for i := 0; i < len(trimmedRows); i++ {
+		for j := 0; j < len(trimmedGrid); j++ {
+			if j < len(trimmedRows[i]) {
+				processedTetromino.WriteRune(trimmedGrid[j][i])
+			} else {
+				processedTetromino.WriteRune('.')
+			}
 		}
 		processedTetromino.WriteRune('\n')
 	}
