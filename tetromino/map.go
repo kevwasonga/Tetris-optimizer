@@ -29,12 +29,23 @@ func Loadbanner(fileName string) (map[int]string, error) {
 			tetrominoLines = append(tetrominoLines, line)
 		}
 
+		// If we have 4 lines, process the tetromino
 		if len(tetrominoLines) == 4 {
 			processedTetromino := processTetromino(tetrominoLines)
 			bannerMap[key] = processedTetromino
+
 			key++
 			tetrominoLines = nil
 		}
+	}
+
+	// Handle the case where the file does not end with an empty line
+	if len(tetrominoLines) > 0 {
+		if len(tetrominoLines) != 4 {
+			return nil, fmt.Errorf("ERROR: Incomplete tetromino, expected 4 lines but got %d", len(tetrominoLines))
+		}
+		processedTetromino := processTetromino(tetrominoLines)
+		bannerMap[key] = processedTetromino
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -84,7 +95,7 @@ func processTetromino(tetromino []string) string {
 	return processedTetromino.String()
 }
 
-// isRowEmpty checks if a row is entirely made of '.'
+// isRowDots checks if a row is entirely made of '.'
 func isRowDots(row []rune) bool {
 	for _, char := range row {
 		if char != '.' {
@@ -94,7 +105,7 @@ func isRowDots(row []rune) bool {
 	return true
 }
 
-// isColumnEmpty checks if a column in the grid is entirely made of '.'
+// isColumnDots checks if a column in the grid is entirely made of '.'
 func isColumnDots(grid [][]rune, col int) bool {
 	for _, row := range grid {
 		if row[col] != '.' {
