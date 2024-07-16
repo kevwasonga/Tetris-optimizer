@@ -38,6 +38,7 @@ func placeTetrominoes(tetrominoes map[rune]string, board [][]rune, current rune,
 				// Backtrack: Remove the tetromino
 				RemoveTetromino(tetrominoes[current], board, x, y)
 			}
+			// If can't place, skip to next cell immediately
 		}
 	}
 
@@ -65,7 +66,6 @@ func initializeBoard(size int) [][]rune {
 			board[i][j] = '.' // Fill with dots
 		}
 	}
-
 	return board
 }
 
