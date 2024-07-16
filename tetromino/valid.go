@@ -22,9 +22,9 @@ func IsValidTetromino(tetromino string) bool {
 	// Check each line for validity
 	for i, line := range lines {
 		for j, char := range line {
-			if char != '.' && char != '#' {
-				return false
-			}
+			// if char != '.' || char != '#' {
+			// 	return false
+			// }
 			if char == '#' {
 				countHashes++
 				connections := 0

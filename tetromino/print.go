@@ -11,7 +11,7 @@ func AssembleTetrominoes(tetrominoes map[rune]string) [][]rune {
 
 	for {
 		board := initializeBoard(size)
-		if placeTetrominoes(tetrominoes, board, 'A', size) && !hasCompleteDotRowOrColumn(board) {
+		if placeTetrominoes(tetrominoes, board, 'A', size) {
 			return board
 		}
 		size++
@@ -94,31 +94,6 @@ func CanPutTetromino(tetromino string, board [][]rune, x int, y int) bool {
 		}
 	}
 	return true
-}
-
-// hasCompleteDotRowOrColumn checks if the board has any row or column completely filled with dots.
-func hasCompleteDotRowOrColumn(board [][]rune) bool {
-	size := len(board)
-
-	for i := 0; i < size; i++ {
-		completeDotRow := true
-		completeDotColumn := true
-
-		for j := 0; j < size; j++ {
-			if board[i][j] != '.' {
-				completeDotRow = false
-			}
-			if board[j][i] != '.' {
-				completeDotColumn = false
-			}
-		}
-
-		if completeDotRow || completeDotColumn {
-			return true
-		}
-	}
-
-	return false
 }
 
 // CalculateMinimumSquareSize calculates the minimum square size needed for the given number of tetrominoes.
