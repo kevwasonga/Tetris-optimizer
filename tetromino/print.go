@@ -5,59 +5,55 @@ import (
 	"strings"
 )
 
-// pos represents a coordinate on the board.
-type pos struct {
-	X int
-	Y int
-}
-
 // AssembleTetrominoes arranges the tetrominoes on a square board.
-func AssembleTetrominoes(tetrominoes map[int]string) [][]rune {
+func AssembleTetrominoes(tetrominoes map[rune]string) [][]rune {
 	size := CalculateMinimumSquareSize(len(tetrominoes))
-	board := initializeBoard(size)
 
 	for {
-		allPlaced := true
-
-		for i := 1; i <= len(tetrominoes); i++ {
-			placed := false
-
-			for x := 0; x < size && !placed; x++ {
-				for y := 0; y < size && !placed; y++ {
-					if CanPutTetromino(tetrominoes[i], board, x, y) {
-						board = PutTetromino(tetrominoes[i], board, x, y)
-						printTetromino(tetrominoes[i]) // Print the tetromino being placed
-						placed = true
-					}
-				}
-			}
-
-			if !placed {
-				allPlaced = false
-			}
+		board := initializeBoard(size)
+		if placeTetrominoes(tetrominoes, board, 'A', size) && !hasCompleteDotRowOrColumn(board) {
+			return board
 		}
-
-		if !allPlaced {
-			// Expand the board and restart the process
-			size++
-			board = initializeBoard(size)
-		} else {
-			break // Exit if all tetrominoes are placed
-		}
+		size++
 	}
-
-	return board
 }
 
-// printTetromino prints the tetromino to the console.
-func printTetromino(tetromino string) {
-	lines := strings.Split(tetromino, "\n")
-	for _, line := range lines {
-		if line != "" {
-			println(line)
+// placeTetrominoes attempts to place all tetrominoes on the board recursively.
+func placeTetrominoes(tetrominoes map[rune]string, board [][]rune, current rune, size int) bool {
+	if current > 'A'+rune(len(tetrominoes)-1) {
+		return true // All tetrominoes placed
+	}
+
+	for x := 0; x < size; x++ {
+		for y := 0; y < size; y++ {
+			if CanPutTetromino(tetrominoes[current], board, x, y) {
+				// Place the tetromino
+				PutTetromino(tetrominoes[current], board, x, y, current)
+
+				// Recursive call to place the next tetromino
+				if placeTetrominoes(tetrominoes, board, current+1, size) {
+					return true
+				}
+
+				// Backtrack: Remove the tetromino
+				RemoveTetromino(tetrominoes[current], board, x, y)
+			}
 		}
 	}
-	println() // Print a new line for separation
+
+	return false // No valid placement found
+}
+
+// RemoveTetromino removes the tetromino from the board at the specified position.
+func RemoveTetromino(tetromino string, board [][]rune, x int, y int) {
+	lines := strings.Split(tetromino, "\n")
+	for i, line := range lines {
+		for j, char := range line {
+			if char == '#' {
+				board[x+i][y+j] = '.' // Clear the position
+			}
+		}
+	}
 }
 
 // initializeBoard creates a square board filled with dots.
@@ -69,20 +65,20 @@ func initializeBoard(size int) [][]rune {
 			board[i][j] = '.' // Fill with dots
 		}
 	}
+
 	return board
 }
 
 // PutTetromino places a tetromino on the board at the specified position, maintaining its shape.
-func PutTetromino(tetromino string, board [][]rune, x int, y int) [][]rune {
+func PutTetromino(tetromino string, board [][]rune, x int, y int, key rune) {
 	lines := strings.Split(tetromino, "\n")
 	for i, line := range lines {
 		for j, char := range line {
-			if char >= 'A' && char <= 'Z' {
-				board[x+i][y+j] = char // Assign the letter directly
+			if char == '#' {
+				board[x+i][y+j] = key // Assign the letter directly based on key
 			}
 		}
 	}
-	return board
 }
 
 // CanPutTetromino checks if a tetromino can be placed at the given position on the board.
@@ -90,7 +86,7 @@ func CanPutTetromino(tetromino string, board [][]rune, x int, y int) bool {
 	lines := strings.Split(tetromino, "\n")
 	for i, line := range lines {
 		for j, char := range line {
-			if char >= 'A' && char <= 'Z' {
+			if char == '#' {
 				if x+i >= len(board) || y+j >= len(board) || board[x+i][y+j] != '.' {
 					return false
 				}
@@ -98,6 +94,31 @@ func CanPutTetromino(tetromino string, board [][]rune, x int, y int) bool {
 		}
 	}
 	return true
+}
+
+// hasCompleteDotRowOrColumn checks if the board has any row or column completely filled with dots.
+func hasCompleteDotRowOrColumn(board [][]rune) bool {
+	size := len(board)
+
+	for i := 0; i < size; i++ {
+		completeDotRow := true
+		completeDotColumn := true
+
+		for j := 0; j < size; j++ {
+			if board[i][j] != '.' {
+				completeDotRow = false
+			}
+			if board[j][i] != '.' {
+				completeDotColumn = false
+			}
+		}
+
+		if completeDotRow || completeDotColumn {
+			return true
+		}
+	}
+
+	return false
 }
 
 // CalculateMinimumSquareSize calculates the minimum square size needed for the given number of tetrominoes.

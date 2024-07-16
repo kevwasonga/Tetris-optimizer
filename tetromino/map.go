@@ -8,11 +8,11 @@ import (
 )
 
 // Loadbanner loads the banner file containing tetrominoes and processes each tetromino.
-// It returns a map with keys representing the tetromino index and values as the processed tetromino string.
 func Loadbanner(fileName string) (map[int]string, error) {
 	file, err := os.Open(fileName)
 	if err != nil {
-		return nil, fmt.Errorf("Error opening file %s: %v", fileName, err)
+		fmt.Println("ERROR")
+		os.Exit(1)
 	}
 	defer file.Close()
 
@@ -42,21 +42,22 @@ func Loadbanner(fileName string) (map[int]string, error) {
 	// Handle the case where the file does not end with an empty line
 	if len(tetrominoLines) > 0 {
 		if len(tetrominoLines) != 4 {
-			return nil, fmt.Errorf("ERROR: Incomplete tetromino, expected 4 lines but got %d", len(tetrominoLines))
+			fmt.Println("ERROR")
+			os.Exit(1)
 		}
 		processedTetromino := processTetromino(tetrominoLines)
 		bannerMap[key] = processedTetromino
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("Error reading file %s: %v", fileName, err)
+		fmt.Println("ERROR")
+		os.Exit(1)
 	}
 
 	return bannerMap, nil
 }
 
 // processTetromino processes a single tetromino (4x4 grid) string.
-// It removes rows and columns made entirely of '.' and returns the processed tetromino string.
 func processTetromino(tetromino []string) string {
 	grid := make([][]rune, 4)
 	for i, line := range tetromino {
@@ -83,7 +84,7 @@ func processTetromino(tetromino []string) string {
 		}
 	}
 
-	// Convert trimmed grid back to string with original formatting
+	// Convert trimmed grid back to string
 	var processedTetromino strings.Builder
 	for i := 0; i < len(trimmedRows); i++ {
 		for j := 0; j < len(trimmedGrid); j++ {
