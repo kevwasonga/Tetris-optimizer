@@ -2,24 +2,24 @@ package tetromino
 
 import (
 	"math"
-	"strings"
 )
 
 // AssembleTetrominoes arranges the tetrominoes on a square board.
-func AssembleTetrominoes(tetrominoes map[rune]string) [][]rune {
+func AssembleTetrominoes(tetrominoes map[rune][][]rune) [][]rune {
 	size := CalculateMinimumSquareSize(len(tetrominoes))
+	board := initializeBoard(size)
 
 	for {
-		board := initializeBoard(size)
 		if placeTetrominoes(tetrominoes, board, 'A', size) {
 			return board
 		}
 		size++
+		board = initializeBoard(size) // Reinitialize the board with new size
 	}
 }
 
 // placeTetrominoes attempts to place all tetrominoes on the board recursively.
-func placeTetrominoes(tetrominoes map[rune]string, board [][]rune, current rune, size int) bool {
+func placeTetrominoes(tetrominoes map[rune][][]rune, board [][]rune, current rune, size int) bool {
 	if current > 'A'+rune(len(tetrominoes)-1) {
 		return true // All tetrominoes placed
 	}
@@ -27,18 +27,12 @@ func placeTetrominoes(tetrominoes map[rune]string, board [][]rune, current rune,
 	for x := 0; x < size; x++ {
 		for y := 0; y < size; y++ {
 			if CanPutTetromino(tetrominoes[current], board, x, y) {
-				// Place the tetromino
 				PutTetromino(tetrominoes[current], board, x, y, current)
-
-				// Recursive call to place the next tetromino
 				if placeTetrominoes(tetrominoes, board, current+1, size) {
 					return true
 				}
-
-				// Backtrack: Remove the tetromino
 				RemoveTetromino(tetrominoes[current], board, x, y)
 			}
-			// If can't place, skip to next cell immediately
 		}
 	}
 
@@ -46,10 +40,9 @@ func placeTetrominoes(tetrominoes map[rune]string, board [][]rune, current rune,
 }
 
 // RemoveTetromino removes the tetromino from the board at the specified position.
-func RemoveTetromino(tetromino string, board [][]rune, x int, y int) {
-	lines := strings.Split(tetromino, "\n")
-	for i, line := range lines {
-		for j, char := range line {
+func RemoveTetromino(tetromino [][]rune, board [][]rune, x int, y int) {
+	for i, row := range tetromino {
+		for j, char := range row {
 			if char == '#' {
 				board[x+i][y+j] = '.' // Clear the position
 			}
@@ -70,10 +63,9 @@ func initializeBoard(size int) [][]rune {
 }
 
 // PutTetromino places a tetromino on the board at the specified position, maintaining its shape.
-func PutTetromino(tetromino string, board [][]rune, x int, y int, key rune) {
-	lines := strings.Split(tetromino, "\n")
-	for i, line := range lines {
-		for j, char := range line {
+func PutTetromino(tetromino [][]rune, board [][]rune, x int, y int, key rune) {
+	for i, row := range tetromino {
+		for j, char := range row {
 			if char == '#' {
 				board[x+i][y+j] = key // Assign the letter directly based on key
 			}
@@ -82,10 +74,9 @@ func PutTetromino(tetromino string, board [][]rune, x int, y int, key rune) {
 }
 
 // CanPutTetromino checks if a tetromino can be placed at the given position on the board.
-func CanPutTetromino(tetromino string, board [][]rune, x int, y int) bool {
-	lines := strings.Split(tetromino, "\n")
-	for i, line := range lines {
-		for j, char := range line {
+func CanPutTetromino(tetromino [][]rune, board [][]rune, x int, y int) bool {
+	for i, row := range tetromino {
+		for j, char := range row {
 			if char == '#' {
 				if x+i >= len(board) || y+j >= len(board) || board[x+i][y+j] != '.' {
 					return false
