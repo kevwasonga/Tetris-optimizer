@@ -11,7 +11,7 @@ import (
 func Loadbanner(fileName string) (map[int]string, error) {
 	file, err := os.Open(fileName)
 	if err != nil {
-		fmt.Println("ERROR")
+		fmt.Println("ERROR: Failed to open file:", err)
 		os.Exit(1)
 	}
 	defer file.Close()
@@ -21,12 +21,28 @@ func Loadbanner(fileName string) (map[int]string, error) {
 	bannerMap := make(map[int]string)
 	key := 1
 	var tetrominoLines []string
+	consecutiveNonEmptyLines := 0
 
 	for scanner.Scan() {
 		line := scanner.Text()
 
+		// Check for consecutive non-empty lines
 		if line != "" {
+
+			if len(line) != 4 {
+				fmt.Println("ERROR")
+				os.Exit(0)
+
+			}
+			consecutiveNonEmptyLines++
+			if consecutiveNonEmptyLines > 4 {
+				fmt.Println("ERROR")
+				os.Exit(0)
+			}
+
 			tetrominoLines = append(tetrominoLines, line)
+		} else {
+			consecutiveNonEmptyLines = 0
 		}
 
 		// If we have 4 lines, process the tetromino
@@ -42,16 +58,16 @@ func Loadbanner(fileName string) (map[int]string, error) {
 	// Handle the case where the file does not end with an empty line
 	if len(tetrominoLines) > 0 {
 		if len(tetrominoLines) != 4 {
-			fmt.Println("ERROR")
-			os.Exit(1)
+			fmt.Println("ERROR!")
+			os.Exit(0)
 		}
 		processedTetromino := processTetromino(tetrominoLines)
 		bannerMap[key] = processedTetromino
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Println("ERROR")
-		os.Exit(1)
+		fmt.Println("ERROR", err)
+		os.Exit(0)
 	}
 
 	return bannerMap, nil
