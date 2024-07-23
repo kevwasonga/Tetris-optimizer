@@ -1,3 +1,7 @@
+
+
+---
+
 ## Tetris Optimizer README
 
 ### Project Overview
@@ -11,10 +15,9 @@ The project directory has the following structure:
 ```
 tetris-optimizer/
 ├── tetromino/
+     ├── array.go
 │   ├── map.go
 │   ├── print.go
-│   ├── 
-│   ├── trim.go
 │   ├── valid.go
 ├── go.mod
 ├── LICENSE
@@ -72,41 +75,43 @@ Each tetromino must be a 4x4 grid of characters with `#` representing the tetrom
 
 #### Running the Program
 
-1. **Build the program:**
+1. **Run the program without timing:**
 
 ```sh
 go run main.go
 ```
 
+2. **Run the program with a specific tetromino file:**
 
-The program will read the tetromino file, validate the tetrominoes, and then attempt to assemble them onto the smallest possible square board.
+```sh
+go run main.go sample.txt
+```
+
+3. **Run the program with timing:**
+
+If you want to measure the total execution time, use:
+
+```sh
+time go run main.go sample.txt
+```
 
 ### Code Explanation
 
 #### main.go
 
-The entry point of the program:
-
-```go
+The entry point of the program. It loads tetrominoes from the file, validates them, and attempts to assemble them onto the smallest possible square board.
 
 #### tetromino/loadbanner.go
 
-Loads and processes the tetrominoes from the file:
-
-
-```
+Loads and processes the tetrominoes from the file.
 
 #### tetromino/print.go
 
-Handles the assembly of tetrominoes onto the board:
-
-```go
-
-```
+Handles the assembly of tetrominoes onto the board.
 
 ### Error Handling
 
-- If any error occurs during file reading or tetromino validation, the program prints `ERROR` and terminates immediately using `os.Exit(1)`.
+- If any error occurs during file reading or tetromino validation, the program prints `ERROR` and terminates immediately using `os.Exit(0)`.
 
 ### Future Improvements
 
@@ -125,4 +130,6 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 ### Contact
 
 For any issues or questions, please open an issue in the repository or contact the maintainer at [kevinwasonga116@gmail.com].
+
+---
 
