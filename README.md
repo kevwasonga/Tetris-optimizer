@@ -1,8 +1,5 @@
 
 
----
-
-## Tetris Optimizer README
 
 ### Project Overview
 
